@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:codis/core/theme/app_theme.dart';
 import 'package:codis/features/cipher/presentation/cipher_page.dart';
@@ -31,10 +30,10 @@ class _AppState extends State<App> {
       locale: const Locale('fa', 'IR'),
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light.copyWith(
-        textTheme: GoogleFonts.vazirmatnTextTheme(AppTheme.light.textTheme),
+        textTheme: AppTheme.light.textTheme.apply(fontFamily: 'Vazirmatn'),
       ),
       darkTheme: AppTheme.dark.copyWith(
-        textTheme: GoogleFonts.vazirmatnTextTheme(AppTheme.dark.textTheme),
+        textTheme: AppTheme.dark.textTheme.apply(fontFamily: 'Vazirmatn'),
       ),
       themeMode: _themeMode,
       home: CipherPage(onThemeToggle: _toggleTheme),

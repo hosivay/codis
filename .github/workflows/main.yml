@@ -41,8 +41,10 @@ jobs:
         shell: pwsh
         run: |
           $base = "C:\Program Files (x86)\Windows Kits\10\bin"
-          $sdkVersion = Get-ChildItem $base -Directory | Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty Name
+          $sdkVersion = Get-ChildItem $base -Directory | Where-Object { $_.Name -match '^\d+\.\d+' } | Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty Name
+          if (-not $sdkVersion) { throw "No Windows SDK version folder found in $base" }
           $srcX64 = Join-Path $base "$sdkVersion\x64"
+          if (-not (Test-Path $srcX64)) { throw "Path not found: $srcX64" }
           $sdkDir = "C:\sdkbin"
           New-Item -ItemType Directory -Force -Path $sdkDir | Out-Null
           Copy-Item -Path "$srcX64\*" -Destination $sdkDir -Recurse -Force
@@ -61,7 +63,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
-          files: Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Windows.zip
+          files: "Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Windows.zip"
           allowUpdates: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,11 +74,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - run: flutter pub get
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
 
       - name: Build APK
         run: flutter build apk --release
@@ -91,10 +99,12 @@ jobs:
           mv build/app/outputs/bundle/release/app-release.aab "Codis-${version}-Android.aab"
 
       - name: Upload Android Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
-          files: "Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Android.apk,Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Android.aab"
+          files: |
+            Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Android.apk
+            Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Android.aab
           allowUpdates: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -106,15 +116,23 @@ jobs:
     needs: [windows-build, android-build]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - run: flutter pub get
-      - run: flutter build web --release --base-href "/codis/"
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: flutter build web --release --base-href "/codis/"
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web

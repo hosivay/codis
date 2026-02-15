@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: "Codis ,develop by hosivay"
+        description: ""
         required: false
   push:
     tags:
@@ -31,25 +31,14 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Enable Windows desktop
+      - name: Enable Windows Desktop
         run: flutter config --enable-windows-desktop
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Setup Windows SDK and Build (mt.exe in PATH)
-        shell: pwsh
-        run: |
-          $base = "C:\Program Files (x86)\Windows Kits\10\bin"
-          $sdkVersion = Get-ChildItem $base -Directory | Where-Object { $_.Name -match '^\d+\.\d+' } | Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty Name
-          if (-not $sdkVersion) { throw "No Windows SDK version folder found in $base" }
-          $srcX64 = Join-Path $base "$sdkVersion\x64"
-          if (-not (Test-Path $srcX64)) { throw "Path not found: $srcX64" }
-          $sdkDir = "C:\sdkbin"
-          New-Item -ItemType Directory -Force -Path $sdkDir | Out-Null
-          Copy-Item -Path "$srcX64\*" -Destination $sdkDir -Recurse -Force
-          $env:PATH = "$sdkDir;$env:PATH"
-          flutter build windows --release
+      - name: Build Windows Release
+        run: flutter build windows --release
 
       - name: Zip Windows artifact
         shell: pwsh

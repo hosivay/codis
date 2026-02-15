@@ -20,48 +20,48 @@ env:
   VERSION: ${{ github.event.inputs.tag_name || github.ref_name }}
 
 # ================= Windows Build =================
-jobs:
-  windows-build:
-    name: 🪟 Build Windows
-    runs-on: windows-2022
+# jobs:
+#   windows-build:
+#     name: 🪟 Build Windows
+#     runs-on: windows-2022
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
+#       - name: Setup Flutter
+#         uses: subosito/flutter-action@v2
+#         with:
+#           channel: stable
+#           cache: true
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+#       - name: Setup MSBuild
+#         uses: microsoft/setup-msbuild@v2
 
-      - name: Enable Windows Desktop
-        run: flutter config --enable-windows-desktop
+#       - name: Enable Windows Desktop
+#         run: flutter config --enable-windows-desktop
 
-      - name: Get dependencies
-        run: flutter pub get
+#       - name: Get dependencies
+#         run: flutter pub get
 
-      - name: Build Windows Release
-        run: flutter build windows --release
+#       - name: Build Windows Release
+#         run: flutter build windows --release
 
-      - name: Zip Windows Artifact
-        shell: pwsh
-        run: |
-          Compress-Archive `
-            -Path "build\windows\x64\runner\Release\*" `
-            -DestinationPath "Codis-${{ env.VERSION }}-Windows.zip"
+#       - name: Zip Windows Artifact
+#         shell: pwsh
+#         run: |
+#           Compress-Archive `
+#             -Path "build\windows\x64\runner\Release\*" `
+#             -DestinationPath "Codis-${{ env.VERSION }}-Windows.zip"
 
-      - name: Upload Windows Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.VERSION }}
-          files: Codis-${{ env.VERSION }}-Windows.zip
-          allowUpdates: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - name: Upload Windows Release
+#         uses: softprops/action-gh-release@v2
+#         with:
+#           tag_name: ${{ env.VERSION }}
+#           files: Codis-${{ env.VERSION }}-Windows.zip
+#           allowUpdates: true
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # ================= Android Build =================
   android-build:

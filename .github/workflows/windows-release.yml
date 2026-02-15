@@ -2,9 +2,14 @@ name: Windows Release Build
 
 on:
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: ""
+        required: false
+
   push:
     tags:
-      - 'v1.0.0'
+      - 'v*'
 
 permissions:
   contents: write
@@ -14,25 +19,43 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      - run: flutter config --enable-windows-desktop
+      - name: Enable Windows Desktop
+        run: flutter config --enable-windows-desktop
 
-      - run: flutter pub get
+      - name: Install Dependencies
+        run: flutter pub get
 
-      - run: flutter build windows --release
+      - name: Build Windows Release
+        run: flutter build windows --release
 
       - name: Zip Windows Build
         run: |
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath codis-windows.zip
+          Compress-Archive `
+            -Path build\windows\x64\runner\Release\* `
+            -DestinationPath codis-windows.zip
 
-      - name: Create Release and Upload Asset
+      - name: Determine Tag
+        id: tag
+        run: |
+          if ("${{ github.event.inputs.tag_name }}" -ne "") {
+            echo "tag=${{ github.event.inputs.tag_name }}" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "tag=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Create or Update Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.tag.outputs.tag }}
           files: codis-windows.zip
+          allowUpdates: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -22,34 +22,46 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - run: flutter config --enable-windows-desktop
-      - run: flutter pub get
-      - name: Copy Windows SDK tools to short path and build
+          cache: true
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Setup Windows SDK (mt.exe)
         shell: pwsh
         run: |
           $base = "C:\Program Files (x86)\Windows Kits\10\bin"
-          $version = Get-ChildItem $base -Directory | Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty Name
-          $srcX64 = Join-Path $base "$version\x64"
+          $sdkVersion = Get-ChildItem $base -Directory | Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty Name
+          $srcX64 = Join-Path $base "$sdkVersion\x64"
           $sdkDir = "C:\sdkbin"
           New-Item -ItemType Directory -Force -Path $sdkDir | Out-Null
           Copy-Item -Path "$srcX64\*" -Destination $sdkDir -Recurse -Force
-          $env:PATH = "$sdkDir;$env:PATH"
-          flutter build windows --release
+          "C:\sdkbin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
-      - name: Zip Windows Build with proper name
+      - name: Build Windows (Release)
+        run: flutter build windows --release
+
+      - name: Zip Windows artifact
+        shell: pwsh
         run: |
-          $version="${{ github.event.inputs.tag_name || github.ref_name }}"
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath "Codis-${version}-Windows.zip"
+          $ver = "${{ github.event.inputs.tag_name || github.ref_name }}"
+          Compress-Archive -Path "build\windows\x64\runner\Release\*" -DestinationPath "Codis-$ver-Windows.zip"
 
-      - name: Upload Windows Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
-          files: "Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Windows.zip"
+          files: Codis-${{ github.event.inputs.tag_name || github.ref_name }}-Windows.zip
           allowUpdates: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

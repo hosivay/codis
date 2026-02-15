@@ -102,4 +102,4 @@ flutter_launcher_icons:
   windows:
     generate: true
     icon_size: 256
-    image_path: "ios/Runner/Assets.xcassets/AppIcon.appiconset/AppIcon~ios-marketing.png"
+    image_path: "windows/runner/resources/app_icon.png"

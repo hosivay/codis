@@ -8,15 +8,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v3
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
+          channel: stable
 
       - run: flutter pub get
+
       - run: flutter build web --release --base-href "/codis/"
 
       - uses: peaceiris/actions-gh-pages@v3

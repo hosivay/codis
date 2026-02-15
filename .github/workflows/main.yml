@@ -28,16 +28,17 @@ jobs:
           channel: stable
       - run: flutter config --enable-windows-desktop
       - run: flutter pub get
-      - name: Add Windows SDK (mt.exe) to PATH
+      - name: Copy Windows SDK tools to short path and build
         shell: pwsh
         run: |
           $base = "C:\Program Files (x86)\Windows Kits\10\bin"
           $version = Get-ChildItem $base -Directory | Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty Name
-          $pathX64 = Join-Path $base "$version\x64"
-          $pathX86 = Join-Path $base "$version\x86"
-          "$pathX64" | Out-File -FilePath $env:GITHUB_PATH -Append
-          "$pathX86" | Out-File -FilePath $env:GITHUB_PATH -Append
-      - run: flutter build windows --release
+          $srcX64 = Join-Path $base "$version\x64"
+          $sdkDir = "C:\sdkbin"
+          New-Item -ItemType Directory -Force -Path $sdkDir | Out-Null
+          Copy-Item -Path "$srcX64\*" -Destination $sdkDir -Recurse -Force
+          $env:PATH = "$sdkDir;$env:PATH"
+          flutter build windows --release
 
       - name: Zip Windows Build with proper name
         run: |

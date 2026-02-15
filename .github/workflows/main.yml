@@ -19,8 +19,8 @@ permissions:
 env:
   VERSION: ${{ github.event.inputs.tag_name || github.ref_name }}
 
-# ================= Windows Build =================
-# jobs:
+jobs:
+# ================= Windows Build (optional) =================
 #   windows-build:
 #     name: 🪟 Build Windows
 #     runs-on: windows-2022
@@ -107,7 +107,7 @@ env:
   web-build:
     name: 🌐 Build Web & Deploy
     runs-on: ubuntu-latest
-    needs: [windows-build, android-build]
+    needs: [android-build]
 
     steps:
       - name: Checkout

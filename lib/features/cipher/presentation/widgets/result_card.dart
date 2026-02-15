@@ -4,9 +4,9 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:codis/core/l10n/app_strings.dart';
-import 'package:codis/core/theme/app_palette.dart';
-import 'package:codis/features/cipher/presentation/widgets/result_full_screen_page.dart';
+import 'package:Codis/core/l10n/app_strings.dart';
+import 'package:Codis/core/theme/app_palette.dart';
+import 'package:Codis/features/cipher/presentation/widgets/result_full_screen_page.dart';
 
 class ResultCard extends StatefulWidget {
   const ResultCard({

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:codis/core/theme/app_palette.dart';
+import 'package:Codis/core/theme/app_palette.dart';
 
 class CipherTextField extends StatefulWidget {
   const CipherTextField({
@@ -91,6 +91,8 @@ class _CipherTextFieldState extends State<CipherTextField> with SingleTickerProv
                 minLines: widget.minLines,
                 maxLines: widget.maxLines,
                 obscureText: widget.isSecret ? _obscured : widget.obscureText,
+                keyboardType: widget.isSecret ? TextInputType.visiblePassword : TextInputType.text,
+                autofillHints: widget.isSecret ? const [] : null,
                 textDirection: widget.textDirection ?? TextDirection.rtl,
                 style: TextStyle(
                   color: textColor,

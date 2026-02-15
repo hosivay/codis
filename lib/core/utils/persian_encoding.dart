@@ -64,6 +64,14 @@ int _runeIndex(int rune) {
   return idx;
 }
 
+int persianRuneFromIndex(int index) => _charRunes[index];
+
+int persianRuneToIndex(int rune) {
+  final idx = _runeToIndex[rune];
+  if (idx == null) throw FormatException('invalid');
+  return idx;
+}
+
 List<int> persianDecode(String s) {
   final normalized = s.replaceAll(RegExp(r'\s'), '');
   final runes = normalized.runes.toList();

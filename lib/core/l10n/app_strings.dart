@@ -78,6 +78,21 @@ class AppStrings {
   static String versionLabel(Locale locale) =>
       locale.languageCode == 'en' ? 'Version' : 'ورژن';
 
+  static String hideInTextLabel(Locale locale) =>
+      locale.languageCode == 'en'
+          ? 'Hide in normal text'
+          : 'مخفی در متن معمولی';
+
+  static String hideInTextCover(Locale locale) =>
+      locale.languageCode == 'en'
+          ? 'Hope you\'re doing well. Talk soon!'
+          : 'امروز هوا خوبه. وقتی وقت داشتی جواب بده.';
+
+  static String shortOutputLabel(Locale locale) =>
+      locale.languageCode == 'en'
+          ? 'Shorter encrypted message'
+          : 'متن رمزشده کوتاه\u200cتر';
+
   static TextDirection textDirection(Locale locale) =>
       locale.languageCode == 'en' ? TextDirection.ltr : TextDirection.rtl;
 }

@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:pointycastle/export.dart';
 
-import 'package:codis/core/utils/persian_encoding.dart';
+import 'package:Codis/core/utils/persian_encoding.dart';
 
 class CipherService {
   static const int _saltLength = 16;

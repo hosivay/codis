@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:codis/core/theme/app_palette.dart';
+import 'package:Codis/core/theme/app_palette.dart';
 
 class AppTheme {
   AppTheme._();

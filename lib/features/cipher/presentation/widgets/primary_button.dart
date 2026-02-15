@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:codis/core/theme/app_palette.dart';
+import 'package:Codis/core/theme/app_palette.dart';
+import 'package:Codis/features/cipher/presentation/widgets/cipher_loading_indicator.dart';
 
 class PrimaryButton extends StatefulWidget {
   const PrimaryButton({
@@ -70,14 +71,7 @@ class _PrimaryButtonState extends State<PrimaryButton> with SingleTickerProvider
               ),
               alignment: Alignment.center,
               child: widget.isLoading
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.9)),
-                      ),
-                    )
+                  ? CipherLoadingIndicator(size: 28, color: Colors.white)
                   : Text(
                       widget.label,
                       textDirection: TextDirection.rtl,

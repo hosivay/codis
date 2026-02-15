@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:codis/core/l10n/app_strings.dart';
-import 'package:codis/core/theme/app_palette.dart';
-import 'package:codis/features/cipher/presentation/widgets/cipher_text_field.dart';
-import 'package:codis/features/cipher/presentation/widgets/primary_button.dart';
-import 'package:codis/features/cipher/presentation/widgets/result_card.dart';
+import 'package:Codis/core/l10n/app_strings.dart';
+import 'package:Codis/core/theme/app_palette.dart';
+import 'package:Codis/features/cipher/presentation/widgets/cipher_text_field.dart';
+import 'package:Codis/features/cipher/presentation/widgets/primary_button.dart';
+import 'package:Codis/features/cipher/presentation/widgets/result_card.dart';
 
 class ActionCard extends StatelessWidget {
   const ActionCard({
@@ -21,6 +21,11 @@ class ActionCard extends StatelessWidget {
     this.error,
     this.result,
     this.onCopy,
+    this.showHideInTextSwitch = false,
+    this.hideInTextValue = false,
+    this.onHideInTextChanged,
+    this.shortOutputValue = false,
+    this.onShortOutputChanged,
   });
 
   final Locale locale;
@@ -35,6 +40,11 @@ class ActionCard extends StatelessWidget {
   final String? error;
   final String? result;
   final VoidCallback? onCopy;
+  final bool showHideInTextSwitch;
+  final bool hideInTextValue;
+  final ValueChanged<bool>? onHideInTextChanged;
+  final bool shortOutputValue;
+  final ValueChanged<bool>? onShortOutputChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +115,50 @@ class ActionCard extends StatelessWidget {
             showPasteButton: true,
             textDirection: dir,
           ),
+          if (showHideInTextSwitch && onHideInTextChanged != null) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    AppStrings.hideInTextLabel(locale),
+                    style: TextStyle(
+                      color: textSecondary,
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                    textDirection: dir,
+                  ),
+                ),
+                Switch.adaptive(
+                  value: hideInTextValue,
+                  onChanged: onHideInTextChanged,
+                ),
+              ],
+            ),
+            if (hideInTextValue && onShortOutputChanged != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      AppStrings.shortOutputLabel(locale),
+                      style: TextStyle(
+                        color: textSecondary,
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                      textDirection: dir,
+                    ),
+                  ),
+                  Switch.adaptive(
+                    value: shortOutputValue,
+                    onChanged: onShortOutputChanged,
+                  ),
+                ],
+              ),
+            ],
+          ],
           const SizedBox(height: 18),
           PrimaryButton(
             label: actionLabel,

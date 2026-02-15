@@ -1,41 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:codis/core/theme/app_theme.dart';
-import 'package:codis/features/cipher/presentation/cipher_page.dart';
+import 'package:Codis/core/theme/app_theme.dart';
+import 'package:Codis/core/providers/app_providers.dart';
+import 'package:Codis/features/cipher/presentation/cipher_page.dart';
 
-class App extends StatefulWidget {
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  ThemeMode _themeMode = ThemeMode.system;
-  Locale _locale = const Locale('fa', 'IR');
-
-  void _toggleTheme() {
-    setState(() {
-      if (_themeMode == ThemeMode.light) {
-        _themeMode = ThemeMode.dark;
-      } else {
-        _themeMode = ThemeMode.light;
-      }
-    });
-  }
-
-  void _toggleLocale() {
-    setState(() {
-      _locale = _locale.languageCode == 'fa' ? const Locale('en') : const Locale('fa', 'IR');
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final fontFamily = _locale.languageCode == 'fa' ? 'Vazirmatn' : null;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
+    final fontFamily = locale.languageCode == 'fa' ? 'Vazirmatn' : null;
     return MaterialApp(
       title: 'Codis',
-      locale: _locale,
+      locale: locale,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light.copyWith(
         textTheme: fontFamily != null
@@ -47,12 +27,8 @@ class _AppState extends State<App> {
             ? AppTheme.dark.textTheme.apply(fontFamily: fontFamily)
             : AppTheme.dark.textTheme,
       ),
-      themeMode: _themeMode,
-      home: CipherPage(
-        onThemeToggle: _toggleTheme,
-        onLocaleToggle: _toggleLocale,
-        locale: _locale,
-      ),
+      themeMode: themeMode,
+      home: const CipherPage(),
     );
   }
 }

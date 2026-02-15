@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:codis/features/cipher/data/cipher_repository.dart';
-import 'package:codis/features/cipher/domain/cipher_isolate.dart';
-import 'package:codis/features/cipher/domain/cipher_service.dart';
+import 'package:Codis/features/cipher/data/cipher_repository.dart';
+import 'package:Codis/features/cipher/domain/cipher_isolate.dart';
+import 'package:Codis/features/cipher/domain/cipher_service.dart';
 
 class CipherRepositoryImpl implements CipherRepository {
   CipherRepositoryImpl({CipherService? cipherService})

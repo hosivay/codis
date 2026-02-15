@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:codis/core/l10n/app_strings.dart';
-import 'package:codis/core/theme/app_palette.dart';
+import 'package:Codis/core/l10n/app_strings.dart';
+import 'package:Codis/core/theme/app_palette.dart';
 
 class CodisHeader extends StatelessWidget {
   const CodisHeader({

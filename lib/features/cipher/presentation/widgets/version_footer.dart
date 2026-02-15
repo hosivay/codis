@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:codis/core/l10n/app_strings.dart';
-import 'package:codis/core/theme/app_palette.dart';
+import 'package:Codis/core/l10n/app_strings.dart';
+import 'package:Codis/core/theme/app_palette.dart';
 
 class VersionFooter extends StatelessWidget {
   const VersionFooter({super.key, required this.locale});

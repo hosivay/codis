@@ -1,0 +1,37 @@
+name: Windows Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter config --enable-windows-desktop
+
+      - run: flutter pub get
+
+      - run: flutter build windows --release
+
+      - name: Zip Windows Build
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath codis-windows.zip
+
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: codis-windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

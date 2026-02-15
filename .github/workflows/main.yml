@@ -37,7 +37,7 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Setup Windows SDK (mt.exe)
+      - name: Setup Windows SDK and Build (mt.exe in PATH)
         shell: pwsh
         run: |
           $base = "C:\Program Files (x86)\Windows Kits\10\bin"
@@ -48,10 +48,8 @@ jobs:
           $sdkDir = "C:\sdkbin"
           New-Item -ItemType Directory -Force -Path $sdkDir | Out-Null
           Copy-Item -Path "$srcX64\*" -Destination $sdkDir -Recurse -Force
-          "C:\sdkbin" | Out-File -FilePath $env:GITHUB_PATH -Append
-
-      - name: Build Windows (Release)
-        run: flutter build windows --release
+          $env:PATH = "$sdkDir;$env:PATH"
+          flutter build windows --release
 
       - name: Zip Windows artifact
         shell: pwsh

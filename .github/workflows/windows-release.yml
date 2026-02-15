@@ -1,6 +1,7 @@
 name: Windows Release Build
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v1.0.0'

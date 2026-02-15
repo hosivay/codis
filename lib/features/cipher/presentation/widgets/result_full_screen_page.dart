@@ -4,12 +4,18 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:codis/core/constants/app_constants.dart';
+import 'package:codis/core/l10n/app_strings.dart';
 import 'package:codis/core/theme/app_palette.dart';
 
 class ResultFullScreenPage extends StatefulWidget {
-  const ResultFullScreenPage({super.key, required this.result, this.onCopy});
+  const ResultFullScreenPage({
+    super.key,
+    required this.locale,
+    required this.result,
+    this.onCopy,
+  });
 
+  final Locale locale;
   final String result;
   final VoidCallback? onCopy;
 
@@ -40,9 +46,10 @@ class _ResultFullScreenPageState extends State<ResultFullScreenPage> {
     final padding = width < AppPalette.breakpointSmall ? 16.0 : 24.0;
     final textPrimary = isDark ? AppPalette.textPrimaryDark : AppPalette.textPrimaryLight;
     final accent = isDark ? AppPalette.accentDark : AppPalette.accentLight;
+    final dir = AppStrings.textDirection(widget.locale);
 
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: dir,
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -50,7 +57,7 @@ class _ResultFullScreenPageState extends State<ResultFullScreenPage> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
-            AppConstants.resultLabel,
+            AppStrings.resultLabel(widget.locale),
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: width < AppPalette.breakpointSmall ? 18 : 20,
@@ -60,12 +67,12 @@ class _ResultFullScreenPageState extends State<ResultFullScreenPage> {
             IconButton(
               icon: Icon(_copied ? Icons.check_rounded : Icons.copy_rounded),
               onPressed: _handleCopy,
-              tooltip: AppConstants.copyResult,
+              tooltip: AppStrings.copyResult(widget.locale),
             ),
             IconButton(
               icon: const Icon(Icons.share_rounded),
               onPressed: _handleShare,
-              tooltip: AppConstants.shareResult,
+              tooltip: AppStrings.shareResult(widget.locale),
             ),
           ],
         ),
@@ -73,7 +80,7 @@ class _ResultFullScreenPageState extends State<ResultFullScreenPage> {
           child: SingleChildScrollView(
             padding: EdgeInsets.all(padding),
             child: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: dir,
               child: MarkdownBody(
                 data: widget.result,
                 shrinkWrap: true,
@@ -82,7 +89,7 @@ class _ResultFullScreenPageState extends State<ResultFullScreenPage> {
                   if (href != null && href.isNotEmpty) {
                     final uri = Uri.tryParse(href);
                     if (uri != null) {
-                      launchUrl(uri, mode: LaunchMode.externalApplication, webOnlyWindowName: '_blank');
+                      launchUrl(uri, mode: LaunchMode.platformDefault);
                     }
                   }
                 },
@@ -94,7 +101,10 @@ class _ResultFullScreenPageState extends State<ResultFullScreenPage> {
                   listBullet: TextStyle(color: textPrimary, fontSize: 16),
                   blockquote: TextStyle(color: textPrimary, fontSize: 16, fontStyle: FontStyle.italic),
                   blockquoteDecoration: BoxDecoration(
-                    border: Border(right: BorderSide(color: accent, width: 3)),
+                    border: Border(
+                      left: dir == TextDirection.ltr ? BorderSide(color: accent, width: 3) : BorderSide.none,
+                      right: dir == TextDirection.rtl ? BorderSide(color: accent, width: 3) : BorderSide.none,
+                    ),
                   ),
                   a: TextStyle(color: accent, fontSize: 16, decoration: TextDecoration.underline),
                   code: TextStyle(

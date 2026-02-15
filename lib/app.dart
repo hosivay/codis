@@ -12,6 +12,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   ThemeMode _themeMode = ThemeMode.system;
+  Locale _locale = const Locale('fa', 'IR');
 
   void _toggleTheme() {
     setState(() {
@@ -23,20 +24,35 @@ class _AppState extends State<App> {
     });
   }
 
+  void _toggleLocale() {
+    setState(() {
+      _locale = _locale.languageCode == 'fa' ? const Locale('en') : const Locale('fa', 'IR');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final fontFamily = _locale.languageCode == 'fa' ? 'Vazirmatn' : null;
     return MaterialApp(
-      title: 'کدیس',
-      locale: const Locale('fa', 'IR'),
+      title: 'Codis',
+      locale: _locale,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light.copyWith(
-        textTheme: AppTheme.light.textTheme.apply(fontFamily: 'Vazirmatn'),
+        textTheme: fontFamily != null
+            ? AppTheme.light.textTheme.apply(fontFamily: fontFamily)
+            : AppTheme.light.textTheme,
       ),
       darkTheme: AppTheme.dark.copyWith(
-        textTheme: AppTheme.dark.textTheme.apply(fontFamily: 'Vazirmatn'),
+        textTheme: fontFamily != null
+            ? AppTheme.dark.textTheme.apply(fontFamily: fontFamily)
+            : AppTheme.dark.textTheme,
       ),
       themeMode: _themeMode,
-      home: CipherPage(onThemeToggle: _toggleTheme),
+      home: CipherPage(
+        onThemeToggle: _toggleTheme,
+        onLocaleToggle: _toggleLocale,
+        locale: _locale,
+      ),
     );
   }
 }

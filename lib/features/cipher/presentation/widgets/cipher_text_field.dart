@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:codis/core/theme/app_palette.dart';
 
@@ -12,6 +13,7 @@ class CipherTextField extends StatefulWidget {
     this.obscureText = false,
     this.isSecret = false,
     this.textDirection,
+    this.showPasteButton = false,
   });
 
   final TextEditingController controller;
@@ -21,6 +23,7 @@ class CipherTextField extends StatefulWidget {
   final bool obscureText;
   final bool isSecret;
   final TextDirection? textDirection;
+  final bool showPasteButton;
 
   @override
   State<CipherTextField> createState() => _CipherTextFieldState();
@@ -97,14 +100,29 @@ class _CipherTextFieldState extends State<CipherTextField> with SingleTickerProv
                 decoration: InputDecoration(
                   hintText: widget.hint,
                   hintStyle: TextStyle(color: hintColor, fontSize: 16),
-                  hintTextDirection: TextDirection.rtl,
+                  hintTextDirection: widget.textDirection ?? TextDirection.rtl,
                   contentPadding: EdgeInsets.fromLTRB(
-                    widget.isSecret ? 48 : 18,
+                    widget.isSecret ? 48 : (widget.showPasteButton ? 48 : 18),
                     16,
-                    18,
+                    widget.showPasteButton ? 48 : 18,
                     16,
                   ),
                   border: InputBorder.none,
+                  prefixIcon: widget.showPasteButton
+                      ? GestureDetector(
+                          onTap: () async {
+                            final data = await Clipboard.getData(Clipboard.kTextPlain);
+                            if (data?.text != null && data!.text!.isNotEmpty) {
+                              widget.controller.text = data.text!;
+                            }
+                          },
+                          behavior: HitTestBehavior.opaque,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: Icon(Icons.content_paste_rounded, size: 22, color: hintColor),
+                          ),
+                        )
+                      : null,
                   suffixIcon: widget.isSecret
                       ? GestureDetector(
                           onTap: () => setState(() => _obscured = !_obscured),

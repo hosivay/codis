@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:codis/core/constants/app_constants.dart';
+import 'package:codis/core/l10n/app_strings.dart';
 import 'package:codis/core/theme/app_palette.dart';
 import 'package:codis/features/cipher/presentation/cipher_viewmodel.dart';
 import 'package:codis/features/cipher/presentation/widgets/action_card.dart';
@@ -10,9 +10,16 @@ import 'package:codis/features/cipher/presentation/widgets/custom_mode_tabs.dart
 import 'package:codis/features/cipher/presentation/widgets/version_footer.dart';
 
 class CipherPage extends StatefulWidget {
-  const CipherPage({super.key, this.onThemeToggle});
+  const CipherPage({
+    super.key,
+    this.onThemeToggle,
+    this.onLocaleToggle,
+    required this.locale,
+  });
 
   final VoidCallback? onThemeToggle;
+  final VoidCallback? onLocaleToggle;
+  final Locale locale;
 
   @override
   State<CipherPage> createState() => _CipherPageState();
@@ -39,6 +46,7 @@ class _CipherPageState extends State<CipherPage> {
     _viewModel.encrypt(
       _encryptInputController.text,
       _encryptSecretController.text,
+      widget.locale,
       () => setState(() {}),
     );
   }
@@ -47,6 +55,7 @@ class _CipherPageState extends State<CipherPage> {
     _viewModel.decrypt(
       _decryptInputController.text,
       _decryptSecretController.text,
+      widget.locale,
       () => setState(() {}),
     );
   }
@@ -65,9 +74,10 @@ class _CipherPageState extends State<CipherPage> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = _isDesktop(context);
+    final dir = AppStrings.textDirection(widget.locale);
 
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: dir,
       child: Scaffold(
         body: SafeArea(
           child: Column(
@@ -75,7 +85,7 @@ class _CipherPageState extends State<CipherPage> {
               Expanded(
                 child: isDesktop ? _buildDesktopLayout(context) : _buildMobileLayout(context),
               ),
-              const VersionFooter(),
+              VersionFooter(locale: widget.locale),
             ],
           ),
         ),
@@ -85,10 +95,15 @@ class _CipherPageState extends State<CipherPage> {
 
   Widget _buildDesktopLayout(BuildContext context) {
     final padding = _contentPadding(context);
+    final locale = widget.locale;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CodisHeader(onThemeToggle: widget.onThemeToggle),
+        CodisHeader(
+          locale: locale,
+          onThemeToggle: widget.onThemeToggle,
+          onLocaleToggle: widget.onLocaleToggle,
+        ),
         Expanded(
           child: Center(
             child: ConstrainedBox(
@@ -106,12 +121,13 @@ class _CipherPageState extends State<CipherPage> {
                         child: AnimatedActionCard(
                           delayFrames: 0,
                           child: ActionCard(
-                            title: AppConstants.encryptTitle,
-                            subtitle: AppConstants.encryptSubtitle,
-                            inputHint: AppConstants.inputHintEncrypt,
+                            locale: locale,
+                            title: AppStrings.encryptTitle(locale),
+                            subtitle: AppStrings.encryptSubtitle(locale),
+                            inputHint: AppStrings.inputHintEncrypt(locale),
                             inputController: _encryptInputController,
                             secretController: _encryptSecretController,
-                            actionLabel: AppConstants.doEncrypt,
+                            actionLabel: AppStrings.doEncrypt(locale),
                             onAction: _encrypt,
                             isLoading: _viewModel.encryptLoading,
                             error: _viewModel.encryptError,
@@ -128,12 +144,13 @@ class _CipherPageState extends State<CipherPage> {
                         child: AnimatedActionCard(
                           delayFrames: 2,
                           child: ActionCard(
-                            title: AppConstants.decryptTitle,
-                            subtitle: AppConstants.decryptSubtitle,
-                            inputHint: AppConstants.inputHintDecrypt,
+                            locale: locale,
+                            title: AppStrings.decryptTitle(locale),
+                            subtitle: AppStrings.decryptSubtitle(locale),
+                            inputHint: AppStrings.inputHintDecrypt(locale),
                             inputController: _decryptInputController,
                             secretController: _decryptSecretController,
-                            actionLabel: AppConstants.doDecrypt,
+                            actionLabel: AppStrings.doDecrypt(locale),
                             onAction: _decrypt,
                             isLoading: _viewModel.decryptLoading,
                             error: _viewModel.decryptError,
@@ -155,14 +172,21 @@ class _CipherPageState extends State<CipherPage> {
 
   Widget _buildMobileLayout(BuildContext context) {
     final padding = _contentPadding(context);
+    final locale = widget.locale;
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(child: CodisHeader(onThemeToggle: widget.onThemeToggle)),
+        SliverToBoxAdapter(
+          child: CodisHeader(
+            locale: locale,
+            onThemeToggle: widget.onThemeToggle,
+            onLocaleToggle: widget.onLocaleToggle,
+          ),
+        ),
         SliverToBoxAdapter(
           child: Padding(
             padding: EdgeInsets.fromLTRB(padding, 8, padding, 20),
             child: CustomModeTabs(
-              labels: const [AppConstants.encryptTitle, AppConstants.decryptTitle],
+              labels: [AppStrings.encryptTitle(locale), AppStrings.decryptTitle(locale)],
               selectedIndex: _mobileTabIndex,
               onChanged: (i) => setState(() => _mobileTabIndex = i),
             ),
@@ -199,16 +223,18 @@ class _CipherPageState extends State<CipherPage> {
   }
 
   Widget _mobileEncryptCard() {
+    final locale = widget.locale;
     return AnimatedActionCard(
       key: const ValueKey('mobile_encrypt'),
       delayFrames: 0,
       child: ActionCard(
-        title: AppConstants.encryptTitle,
-        subtitle: AppConstants.encryptSubtitle,
-        inputHint: AppConstants.inputHintEncrypt,
+        locale: locale,
+        title: AppStrings.encryptTitle(locale),
+        subtitle: AppStrings.encryptSubtitle(locale),
+        inputHint: AppStrings.inputHintEncrypt(locale),
         inputController: _encryptInputController,
         secretController: _encryptSecretController,
-        actionLabel: AppConstants.doEncrypt,
+        actionLabel: AppStrings.doEncrypt(locale),
         onAction: _encrypt,
         isLoading: _viewModel.encryptLoading,
         error: _viewModel.encryptError,
@@ -219,16 +245,18 @@ class _CipherPageState extends State<CipherPage> {
   }
 
   Widget _mobileDecryptCard() {
+    final locale = widget.locale;
     return AnimatedActionCard(
       key: const ValueKey('mobile_decrypt'),
       delayFrames: 0,
       child: ActionCard(
-        title: AppConstants.decryptTitle,
-        subtitle: AppConstants.decryptSubtitle,
-        inputHint: AppConstants.inputHintDecrypt,
+        locale: locale,
+        title: AppStrings.decryptTitle(locale),
+        subtitle: AppStrings.decryptSubtitle(locale),
+        inputHint: AppStrings.inputHintDecrypt(locale),
         inputController: _decryptInputController,
         secretController: _decryptSecretController,
-        actionLabel: AppConstants.doDecrypt,
+        actionLabel: AppStrings.doDecrypt(locale),
         onAction: _decrypt,
         isLoading: _viewModel.decryptLoading,
         error: _viewModel.decryptError,
@@ -239,9 +267,10 @@ class _CipherPageState extends State<CipherPage> {
   }
 
   void _showCopied(BuildContext context) {
+    final dir = AppStrings.textDirection(widget.locale);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(AppConstants.copied, textDirection: TextDirection.rtl),
+        content: Text(AppStrings.copied(widget.locale), textDirection: dir),
         duration: const Duration(milliseconds: 1200),
         behavior: SnackBarBehavior.floating,
       ),

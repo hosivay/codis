@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'package:codis/core/l10n/app_strings.dart';
 import 'package:codis/core/theme/app_palette.dart';
 
 class VersionFooter extends StatelessWidget {
-  const VersionFooter({super.key});
+  const VersionFooter({super.key, required this.locale});
+
+  final Locale locale;
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +15,7 @@ class VersionFooter extends StatelessWidget {
     final textSecondary = isDark ? AppPalette.textSecondaryDark : AppPalette.textSecondaryLight;
     final width = MediaQuery.sizeOf(context).width;
     final isCompact = width < AppPalette.breakpointSmall;
+    final dir = AppStrings.textDirection(locale);
 
     return SafeArea(
       top: false,
@@ -22,14 +26,15 @@ class VersionFooter extends StatelessWidget {
             future: PackageInfo.fromPlatform(),
             builder: (context, snapshot) {
               final version = snapshot.data?.version ?? '1.0.0';
+              final label = '${AppStrings.versionLabel(locale)} $version';
               return Text(
-                'ورژن $version',
+                label,
                 style: TextStyle(
                   color: textSecondary.withValues(alpha: 0.9),
                   fontSize: isCompact ? 12 : 13,
                   fontWeight: FontWeight.w500,
                 ),
-                textDirection: TextDirection.rtl,
+                textDirection: dir,
               );
             },
           ),

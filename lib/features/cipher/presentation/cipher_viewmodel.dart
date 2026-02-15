@@ -1,6 +1,7 @@
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/material.dart';
 
-import 'package:codis/core/constants/app_constants.dart';
+import 'package:codis/core/l10n/app_strings.dart';
 import 'package:codis/features/cipher/data/cipher_repository.dart';
 import 'package:codis/features/cipher/data/cipher_repository_impl.dart';
 import 'package:codis/core/utils/persian_encoding.dart';
@@ -25,15 +26,15 @@ class CipherViewModel {
   bool _decryptLoading = false;
   bool get decryptLoading => _decryptLoading;
 
-  void encrypt(String plainText, String secret, void Function() onUpdate) {
+  void encrypt(String plainText, String secret, Locale locale, void Function() onUpdate) {
     if (plainText.trim().isEmpty) {
-      _encryptError = AppConstants.errorEmptyInput;
+      _encryptError = AppStrings.errorEmptyInput(locale);
       _encryptResult = null;
       onUpdate();
       return;
     }
     if (secret.trim().isEmpty) {
-      _encryptError = AppConstants.errorEmptySecret;
+      _encryptError = AppStrings.errorEmptySecret(locale);
       _encryptResult = null;
       onUpdate();
       return;
@@ -47,7 +48,7 @@ class CipherViewModel {
         _encryptLoading = false;
         onUpdate();
       }).catchError((_) {
-        _encryptError = AppConstants.errorDecryptFailed;
+        _encryptError = AppStrings.errorDecryptFailed(locale);
         _encryptResult = null;
         _encryptLoading = false;
         onUpdate();
@@ -55,15 +56,15 @@ class CipherViewModel {
     });
   }
 
-  void decrypt(String cipherPersian, String secret, void Function() onUpdate) {
+  void decrypt(String cipherPersian, String secret, Locale locale, void Function() onUpdate) {
     if (cipherPersian.trim().isEmpty) {
-      _decryptError = AppConstants.errorEmptyInput;
+      _decryptError = AppStrings.errorEmptyInput(locale);
       _decryptResult = null;
       onUpdate();
       return;
     }
     if (secret.trim().isEmpty) {
-      _decryptError = AppConstants.errorEmptySecret;
+      _decryptError = AppStrings.errorEmptySecret(locale);
       _decryptResult = null;
       onUpdate();
       return;
@@ -77,7 +78,7 @@ class CipherViewModel {
       try {
         persianDecode(trimmed);
       } on FormatException {
-        _decryptError = AppConstants.errorInvalidCipher;
+        _decryptError = AppStrings.errorInvalidCipher(locale);
         _decryptResult = null;
         _decryptLoading = false;
         onUpdate();
@@ -88,7 +89,7 @@ class CipherViewModel {
         _decryptLoading = false;
         onUpdate();
       }).catchError((_) {
-        _decryptError = AppConstants.errorDecryptFailed;
+        _decryptError = AppStrings.errorDecryptFailed(locale);
         _decryptResult = null;
         _decryptLoading = false;
         onUpdate();

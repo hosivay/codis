@@ -23,7 +23,7 @@ void main() {
     const secret = 'secret123';
     final encrypted = service.encrypt(plain, secret);
     final mid = encrypted.length ~/ 2;
-    final withNewlines = encrypted.substring(0, mid) + '\n\n' + encrypted.substring(mid);
+    final withNewlines = '${encrypted.substring(0, mid)}\n\n${encrypted.substring(mid)}';
     final decrypted = service.decrypt(withNewlines, secret);
     expect(decrypted, plain);
   });

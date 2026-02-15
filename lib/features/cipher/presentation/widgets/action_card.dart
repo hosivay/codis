@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:codis/core/constants/app_constants.dart';
+import 'package:codis/core/l10n/app_strings.dart';
 import 'package:codis/core/theme/app_palette.dart';
 import 'package:codis/features/cipher/presentation/widgets/cipher_text_field.dart';
 import 'package:codis/features/cipher/presentation/widgets/primary_button.dart';
@@ -9,6 +9,7 @@ import 'package:codis/features/cipher/presentation/widgets/result_card.dart';
 class ActionCard extends StatelessWidget {
   const ActionCard({
     super.key,
+    required this.locale,
     required this.title,
     required this.subtitle,
     required this.inputHint,
@@ -22,6 +23,7 @@ class ActionCard extends StatelessWidget {
     this.onCopy,
   });
 
+  final Locale locale;
   final String title;
   final String subtitle;
   final String inputHint;
@@ -42,6 +44,7 @@ class ActionCard extends StatelessWidget {
     final textPrimary = isDark ? AppPalette.textPrimaryDark : AppPalette.textPrimaryLight;
     final textSecondary = isDark ? AppPalette.textSecondaryDark : AppPalette.textSecondaryLight;
     final errorColor = isDark ? AppPalette.errorDark : AppPalette.errorLight;
+    final dir = AppStrings.textDirection(locale);
 
     return Container(
       width: double.infinity,
@@ -72,7 +75,7 @@ class ActionCard extends StatelessWidget {
               fontSize: 20,
               fontWeight: FontWeight.w700,
             ),
-            textDirection: TextDirection.rtl,
+            textDirection: dir,
           ),
           const SizedBox(height: 4),
           Text(
@@ -82,7 +85,7 @@ class ActionCard extends StatelessWidget {
               fontSize: 14,
               height: 1.4,
             ),
-            textDirection: TextDirection.rtl,
+            textDirection: dir,
           ),
           const SizedBox(height: 20),
           CipherTextField(
@@ -90,13 +93,17 @@ class ActionCard extends StatelessWidget {
             hint: inputHint,
             minLines: 2,
             maxLines: 20,
+            showPasteButton: true,
+            textDirection: dir,
           ),
           const SizedBox(height: 14),
           CipherTextField(
             controller: secretController,
-            hint: AppConstants.secretHint,
+            hint: AppStrings.secretHint(locale),
             maxLines: 1,
             isSecret: true,
+            showPasteButton: true,
+            textDirection: dir,
           ),
           const SizedBox(height: 18),
           PrimaryButton(
@@ -109,12 +116,13 @@ class ActionCard extends StatelessWidget {
             Text(
               error!,
               style: TextStyle(color: errorColor, fontSize: 14, height: 1.4),
-              textDirection: TextDirection.rtl,
+              textDirection: dir,
             ),
           ],
           if (result != null && result!.isNotEmpty) ...[
             const SizedBox(height: 18),
             ResultCard(
+              locale: locale,
               result: result!,
               onCopy: onCopy ?? () {},
             ),

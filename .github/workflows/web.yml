@@ -1,0 +1,41 @@
+name: Web Build & Upload
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        run: flutter build web --release --base-href "/codis/"
+
+      - name: Zip Web
+        run: |
+          cd build/web
+          zip -r ../../Codis-Web.zip .
+
+      - name: Upload to latest release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Codis-Web.zip
+          tag_name: ${{ github.event.repository.default_branch }}
+          allowUpdates: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

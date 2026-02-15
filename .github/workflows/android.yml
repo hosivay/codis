@@ -1,0 +1,44 @@
+name: Android Build & Upload
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Build AAB
+        run: flutter build appbundle --release
+
+      - name: Rename
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk Codis-Android.apk
+          mv build/app/outputs/bundle/release/app-release.aab Codis-Android.aab
+
+      - name: Upload to latest release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Codis-Android.apk
+            Codis-Android.aab
+          tag_name: ${{ github.event.repository.default_branch }}
+          allowUpdates: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
